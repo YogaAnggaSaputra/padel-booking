@@ -10,14 +10,13 @@ use App\Contracts\PaymentGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
     public function index(Request $request, Club $club) {
         $q = Booking::where('club_id', $club->id)->with('court', 'user', 'participants');
         if ($request->filled('status')) $q->where('status', $request->status);
-        if ($request->filled('date')) $q->whereDate('start_time', $request->date);
+        if ($request->filled('date')) $q->whereDate('booking_date', $request->date);
         if ($request->filled('court_id')) $q->where('court_id', $request->court_id);
         return response()->json($q->paginate(20));
     }
@@ -25,23 +24,24 @@ class BookingController extends Controller
     public function store(Request $request, Club $club) {
         $validated = $request->validate([
             'court_id' => 'required|exists:courts,id',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-            'number_of_players' => 'required|integer|min:1|max:4',
-            'players' => 'nullable|array',
+            'booking_date' => 'required|date',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'duration_minutes' => 'required|integer|min:30',
+            'price_per_hour' => 'required|numeric|min:0',
+            'subtotal' => 'required|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
+            'tax' => 'nullable|numeric|min:0',
+            'total' => 'required|numeric|min:0',
             'notes' => 'nullable|string',
         ]);
         $validated['club_id'] = $club->id;
         $validated['user_id'] = Auth::id();
         $validated['uuid'] = (string) Str::uuid();
-        $validated['booking_type'] = 'regular';
         $validated['status'] = 'pending';
-        $validated['payment_status'] = 'pending';
-        $validated['total_amount'] = 0;
-        $validated['final_amount'] = 0;
-        $validated['source'] = 'app';
+        $validated['payment_status'] = 'unpaid';
         $booking = Booking::create($validated);
-        BookingParticipant::create(['booking_id' => $booking->id, 'user_id' => Auth::id(), 'is_organizer' => true, 'joined_at' => now()]);
+        BookingParticipant::create(['booking_id' => $booking->id, 'user_id' => Auth::id(), 'role' => 'organizer', 'joined_at' => now()]);
         return response()->json($booking->load('court', 'participants'), 201);
     }
 

@@ -1,12 +1,14 @@
 <?php
 namespace App\Models;
 
+use App\Models\Concerns\HasUuidColumn;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Match extends Model
 {
+    use HasUuidColumn;
     protected $guarded = ['id'];
     protected $casts = ['start_time' => 'datetime', 'end_time' => 'datetime'];
 

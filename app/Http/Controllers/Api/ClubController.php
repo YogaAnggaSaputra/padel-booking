@@ -14,7 +14,7 @@ class ClubController extends Controller
     }
 
     public function store(Request $request) {
-        $validated = $request->validate(['name' => 'required', 'slug' => 'required|unique:clubs,slug', 'city' => 'required']);
+        $validated = $request->validate(['name' => 'required', 'slug' => 'required|unique:clubs,slug', 'city' => 'required', 'address' => 'required', 'country' => 'nullable|string', 'timezone' => 'nullable|string']);
         $club = Club::create($validated);
         ClubMember::create(['club_id' => $club->id, 'user_id' => Auth::id(), 'role' => 'owner', 'joined_at' => now()]);
         return response()->json($club, 201);

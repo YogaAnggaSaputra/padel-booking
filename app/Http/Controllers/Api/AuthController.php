@@ -18,10 +18,10 @@ class AuthController extends Controller
             'last_name' => 'required|string|max:255',
             'password' => 'nullable|string|min:8',
         ]);
-        $validated['password_hash'] = bcrypt($validated['password'] ?? Str::random(16));
-        unset($validated['password']);
+        $validated['password'] = bcrypt($validated['password'] ?? Str::random(16));
         $user = User::create($validated);
-        return response()->json(['user' => $user], 201);
+        $token = $user->createToken('api')->plainTextToken;
+        return response()->json(['user' => $user, 'token' => $token], 201);
     }
 
     public function login(Request $request) {

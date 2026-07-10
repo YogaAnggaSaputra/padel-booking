@@ -13,8 +13,18 @@ class CourtController extends Controller
     }
 
     public function store(Request $request, Club $club) {
-        $validated = $request->validate(['name' => 'required', 'slug' => 'required|unique:courts,club_id,' . $club->id . ',club_id', 'base_price' => 'required|numeric']);
-        $court = $club->courts()->create($validated);
+        $validated = $request->validate([
+            'name' => 'required',
+            'slug' => 'required|unique:courts,slug,NULL,id,club_id,' . $club->id,
+            'type' => 'required|in:indoor,outdoor,covered,panoramic',
+            'surface' => 'required|in:glass,wall,artificial_grass,concrete',
+            'price_per_hour' => 'required|numeric',
+            'capacity_players' => 'nullable|integer|min:2|max:8',
+            'has_lighting' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+        ]);
+        $validated['club_id'] = $club->id;
+        $court = Court::create($validated);
         return response()->json($court, 201);
     }
 

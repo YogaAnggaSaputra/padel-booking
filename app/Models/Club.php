@@ -1,12 +1,14 @@
 <?php
 namespace App\Models;
 
+use App\Models\Concerns\HasUuidColumn;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Club extends Model
 {
+    use HasUuidColumn;
     protected $guarded = ['id'];
 
     public function courts(): HasMany { return $this->hasMany(Court::class); }

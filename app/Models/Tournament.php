@@ -1,12 +1,14 @@
 <?php
 namespace App\Models;
 
+use App\Models\Concerns\HasUuidColumn;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Tournament extends Model
 {
+    use HasUuidColumn;
     protected $guarded = ['id'];
     protected $casts = [
         'registration_start' => 'datetime', 'registration_end' => 'datetime',
