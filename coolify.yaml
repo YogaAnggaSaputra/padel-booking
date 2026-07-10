@@ -1,0 +1,40 @@
+# Coolify Deployment Config
+# Type: App (PHP + Nginx via supervisord in single container)
+
+build_pack: dockerfile
+dockerfile_path: Dockerfile.app
+
+# Domain
+fqdn: padel.ngodingyuk.site
+redirect_www: false
+# Traefik routes automatically via host header
+
+# Build
+build_command: |
+  composer install --no-dev --optimize-autoloader
+  php artisan key:generate --force
+  php artisan migrate --force
+  php artisan db:seed --force
+  php artisan config:cache
+  php artisan route:cache
+  php artisan view:cache
+  php artisan storage:link
+
+start_command: /usr/bin/supervisord -c /etc/supervisord.conf
+
+# Persistent storage
+persistent_storage:
+  - path: /var/www/html/storage
+    name: padel-storage
+  - path: /var/lib/postgresql/data
+    name: padel-pgdata
+  - path: /data
+    name: padel-redis
+
+# Health check
+healthcheck:
+  path: /up
+  port: 80
+  interval: 30
+  timeout: 5
+  retries: 3

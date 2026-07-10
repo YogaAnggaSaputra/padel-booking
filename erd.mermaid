@@ -1,0 +1,67 @@
+erDiagram
+    %% =========== CORE / TENANT ===========
+    clubs ||--o{ club_members : "has"
+    clubs ||--o{ courts : "manages"
+    clubs ||--o{ coaches : "hosts"
+    clubs ||--o{ membership_plans : "offers"
+    clubs ||--o{ user_memberships : "extends"
+    clubs ||--o{ user_credits : "issues"
+    clubs ||--o{ bookings : "receives"
+    clubs ||--o{ waitlist_entries : "tracks"
+    clubs ||--o{ equipment : "inventories"
+    clubs ||--o{ tournaments : "organizes"
+    clubs ||--o{ lessons : "schedules"
+    clubs ||--o{ reviews : "scored"
+
+    %% =========== USERS ===========
+    users ||--o{ user_social_accounts : "has"
+    users ||--o{ club_members : "is"
+    users ||--o{ bookings : "books"
+    users ||--o{ booking_participants : "joins"
+    users ||--o{ payments : "pays"
+    users ||--o{ user_memberships : "subscribes"
+    users ||--o{ user_credits : "holds"
+    users ||--o{ coaches : "is_coach"
+    users ||--o{ match_participants : "plays"
+    users ||--o{ tournament_registrations : "registers"
+    users ||--o{ lesson_enrollments : "enrolls"
+    users ||--o{ notifications : "receives"
+    users ||--o{ notification_preferences : "configures"
+    users ||--o{ reviews : "writes"
+    users ||--o{ match_participants : "competes"
+
+    %% =========== COURTS ===========
+    courts ||--o{ court_availability : "has_schedule"
+    courts ||--o{ court_pricing : "has_pricing"
+    courts ||--o{ bookings : "assigned_to"
+    courts ||--o{ waitlist_entries : "targeted"
+    courts ||--o{ matches : "hosts"
+
+    %% =========== BOOKINGS ===========
+    bookings ||--o{ booking_participants : "has"
+    bookings ||--o{ payments : "references"
+    bookings ||--o{ equipment_rentals : "includes"
+    bookings ||--o{ reviews : "reviewed"
+
+    %% =========== COACHING ===========
+    coaches ||--o{ coach_availability : "has_availability"
+    coaches ||--o{ bookings : "assigned_lessons"
+    coaches ||--o{ lessons : "teaches"
+
+    %% =========== MEMBERSHIP ===========
+    membership_plans ||--o{ user_memberships : "subscribed"
+    user_memberships ||--o{ membership_transactions : "has_transactions"
+
+    %% =========== EQUIPMENT ===========
+    equipment ||--o{ equipment_rentals : "rented"
+
+    %% =========== MATCHMAKING ===========
+    matches ||--o{ match_participants : "has_players"
+
+    %% =========== TOURNAMENTS ===========
+    tournaments ||--o{ tournament_matches : "has"
+    tournaments ||--o{ tournament_registrations : "has"
+
+    %% =========== LESSONS ===========
+    lessons ||--o{ lesson_enrollments : "has"
+    lessons ||--o{ bookings : "via"
