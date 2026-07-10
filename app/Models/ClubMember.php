@@ -1,9 +1,9 @@
 <?php
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Model;
 
-class ClubMember extends Pivot
+class ClubMember extends Model
 {
     protected $guarded = ['id'];
     public $timestamps = true;
