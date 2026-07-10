@@ -6,16 +6,14 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('user_social_accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('provider');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('provider', ['google', 'apple', 'facebook']);
             $table->string('provider_user_id');
-            $table->string('email')->nullable();
             $table->string('avatar_url')->nullable();
-            $table->json('token')->nullable();
+            $table->jsonb('token_data')->default('{}');
             $table->timestamps();
             $table->unique(['provider', 'provider_user_id']);
         });
-        Schema::create('user_social_accounts', function (Blueprint $table) { $table->index('user_id'); });
     }
     public function down(): void { Schema::dropIfExists('user_social_accounts'); }
 };

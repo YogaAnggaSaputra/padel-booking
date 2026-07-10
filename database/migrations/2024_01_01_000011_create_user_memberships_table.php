@@ -6,20 +6,21 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('user_memberships', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('club_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('plan_id')->constrained();
-            $table->string('status')->default('pending');
-            $table->timestamp('starts_at');
-            $table->timestamp('expires_at');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('club_id')->constrained('clubs')->onDelete('cascade');
+            $table->foreignId('membership_plan_id')->constrained('membership_plans');
+            $table->string('member_code', 30)->unique();
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->integer('remaining_credits')->default(0);
+            $table->integer('remaining_sessions')->default(0);
+            $table->enum('status', ['active', 'expired', 'cancelled', 'frozen'])->default('active');
             $table->boolean('auto_renew')->default(false);
-            $table->integer('credits_remaining')->default(0);
+            $table->timestamp('cancelled_at')->nullable();
             $table->jsonb('metadata')->default('{}');
             $table->timestamps();
+            $table->index(['user_id', 'status']);
         });
-        Schema::create('user_memberships', function (Blueprint $table) { $table->index('user_id'); });
-        Schema::create('user_memberships', function (Blueprint $table) { $table->index('club_id'); });
-        Schema::create('user_memberships', function (Blueprint $table) { $table->index('status'); });
     }
     public function down(): void { Schema::dropIfExists('user_memberships'); }
 };

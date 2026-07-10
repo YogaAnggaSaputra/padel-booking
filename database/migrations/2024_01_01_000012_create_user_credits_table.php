@@ -6,19 +6,16 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('user_credits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('club_id')->constrained()->cascadeOnDelete();
-            $table->decimal('amount', 12, 2);
-            $table->string('type');
-            $table->string('source');
-            $table->decimal('balance_after', 12, 2);
-            $table->unsignedBigInteger('reference_id')->nullable();
-            $table->string('reference_type')->nullable();
-            $table->text('notes')->nullable();
-            $table->jsonb('metadata')->default('{}');
-            $table->timestamp('created_at');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('club_id')->constrained('clubs')->onDelete('cascade');
+            $table->integer('amount');
+            $table->integer('balance')->default(0);
+            $table->string('source', 50);
+            $table->string('description')->nullable();
+            $table->timestamp('expires_at')->nullable();
+            $table->timestamps();
+            $table->index(['user_id', 'club_id', 'expires_at']);
         });
-        Schema::create('user_credits', function (Blueprint $table) { $table->index(['user_id', 'club_id']); });
     }
     public function down(): void { Schema::dropIfExists('user_credits'); }
 };

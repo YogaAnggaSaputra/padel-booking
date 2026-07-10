@@ -7,26 +7,19 @@ return new class extends Migration {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('club_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('type');
-            $table->string('channel');
-            $table->string('status')->default('pending');
-            $table->string('subject')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('type', ['booking', 'payment', 'reminder', 'match', 'tournament', 'lesson', 'system']);
+            $table->string('title');
             $table->text('body');
-            $table->json('payload')->default('{}');
-            $table->timestamp('scheduled_at')->nullable();
+            $table->jsonb('data')->default('{}');
+            $table->enum('channel', ['email', 'whatsapp', 'push', 'sms', 'in_app']);
+            $table->enum('status', ['pending', 'sent', 'failed', 'read'])->default('pending');
             $table->timestamp('sent_at')->nullable();
-            $table->timestamp('delivered_at')->nullable();
             $table->timestamp('read_at')->nullable();
-            $table->text('error_message')->nullable();
-            $table->unsignedInteger('retry_count')->default(0);
-            $table->jsonb('metadata')->default('{}');
             $table->timestamps();
+            $table->index(['user_id', 'status']);
+            $table->index('status');
         });
-        Schema::create('notifications', function (Blueprint $table) { $table->index('user_id'); });
-        Schema::create('notifications', function (Blueprint $table) { $table->index('status'); });
-        Schema::create('notifications', function (Blueprint $table) { $table->index('scheduled_at')->where('status', 'pending'); });
     }
     public function down(): void { Schema::dropIfExists('notifications'); }
 };

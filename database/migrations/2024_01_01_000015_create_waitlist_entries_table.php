@@ -6,25 +6,19 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('waitlist_entries', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('club_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('court_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('guest_name')->nullable();
-            $table->string('guest_email')->nullable();
-            $table->string('guest_phone')->nullable();
-            $table->timestamp('desired_start_time');
-            $table->timestamp('desired_end_time');
-            $table->unsignedInteger('duration_minutes');
-            $table->unsignedInteger('number_of_players')->default(4);
-            $table->string('status')->default('waiting');
+            $table->foreignId('club_id')->constrained('clubs')->onDelete('cascade');
+            $table->foreignId('court_id')->constrained('courts')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->date('requested_date');
+            $table->time('requested_start');
+            $table->time('requested_end');
+            $table->integer('priority')->default(0);
+            $table->enum('status', ['waiting', 'notified', 'converted', 'expired'])->default('waiting');
             $table->timestamp('notified_at')->nullable();
-            $table->foreignId('converted_booking_id')->nullable()->constrained('bookings');
-            $table->timestamp('expires_at');
-            $table->jsonb('metadata')->default('{}');
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
+            $table->index(['court_id', 'requested_date', 'status']);
         });
-        Schema::create('waitlist_entries', function (Blueprint $table) { $table->index(['court_id', 'desired_start_time']); });
-        Schema::create('waitlist_entries', function (Blueprint $table) { $table->index('status'); });
     }
     public function down(): void { Schema::dropIfExists('waitlist_entries'); }
 };

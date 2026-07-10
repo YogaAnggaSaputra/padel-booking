@@ -6,19 +6,16 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('club_members', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('club_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('role')->default('member');
-            $table->string('status')->default('active');
-            $table->timestamp('joined_at');
+            $table->foreignId('club_id')->constrained('clubs')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('role', ['owner', 'admin', 'staff', 'front_desk', 'coach', 'member']);
+            $table->boolean('is_active')->default(true);
+            $table->timestamp('joined_at')->nullable();
             $table->timestamp('left_at')->nullable();
-            $table->jsonb('metadata')->default('{}');
+            $table->jsonb('permissions')->default('{}');
             $table->timestamps();
-            $table->unique(['club_id', 'user_id']);
+            $table->unique(['club_id', 'user_id', 'role']);
         });
-        Schema::create('club_members', function (Blueprint $table) { $table->index('club_id'); });
-        Schema::create('club_members', function (Blueprint $table) { $table->index('user_id'); });
-        Schema::create('club_members', function (Blueprint $table) { $table->index('role'); });
     }
     public function down(): void { Schema::dropIfExists('club_members'); }
 };

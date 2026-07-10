@@ -18,9 +18,3 @@ return new class extends Migration {
             $table->jsonb('metadata')->default('{}');
             $table->timestamp('created_at');
         });
-        Schema::create('audit_logs', function (Blueprint $table) { $table->index(['club_id', 'entity_type', 'entity_id']); });
-        Schema::create('audit_logs', function (Blueprint $table) { $table->index('user_id'); });
-        Schema::create('audit_logs', function (Blueprint $table) { $table->index('created_at'); });
-    }
-    public function down(): void { Schema::dropIfExists('audit_logs'); }
-};

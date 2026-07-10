@@ -6,15 +6,14 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('court_availability', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('court_id')->constrained()->cascadeOnDelete();
-            $table->string('exception_type')->default('blocked');
-            $table->timestamp('start_time');
-            $table->timestamp('end_time');
-            $table->string('reason')->nullable();
-            $table->jsonb('metadata')->default('{}');
+            $table->foreignId('court_id')->constrained('courts')->onDelete('cascade');
+            $table->tinyInteger('day_of_week');
+            $table->time('open_time');
+            $table->time('close_time');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->unique(['court_id', 'day_of_week']);
         });
-        Schema::create('court_availability', function (Blueprint $table) { $table->index(['court_id', 'start_time', 'end_time']); });
     }
     public function down(): void { Schema::dropIfExists('court_availability'); }
 };

@@ -6,12 +6,12 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('lesson_enrollments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lesson_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('payment_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('status')->default('confirmed');
-            $table->text('feedback')->nullable();
-            $table->unsignedTinyInteger('rating')->nullable();
+            $table->foreignId('lesson_id')->constrained('lessons')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('status', ['enrolled', 'attended', 'absent', 'cancelled'])->default('enrolled');
+            $table->decimal('amount_paid', 10, 2)->default(0);
+            $table->boolean('has_paid')->default(false);
+            $table->timestamp('paid_at')->nullable();
             $table->timestamps();
             $table->unique(['lesson_id', 'user_id']);
         });

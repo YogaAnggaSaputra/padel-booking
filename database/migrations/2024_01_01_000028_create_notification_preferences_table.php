@@ -6,13 +6,15 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('notification_preferences', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('club_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('channel');
-            $table->string('event_type');
-            $table->boolean('is_enabled')->default(true);
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->enum('notification_type', ['booking_confirmation', 'booking_reminder', 'payment_receipt', 'match_invitation', 'tournament_update', 'lesson_update', 'promo']);
+            $table->boolean('email_enabled')->default(true);
+            $table->boolean('whatsapp_enabled')->default(true);
+            $table->boolean('push_enabled')->default(true);
+            $table->boolean('sms_enabled')->default(false);
+            $table->integer('reminder_minutes_before')->default(60);
             $table->timestamps();
-            $table->unique(['user_id', 'club_id', 'channel', 'event_type']);
+            $table->unique(['user_id', 'notification_type']);
         });
     }
     public function down(): void { Schema::dropIfExists('notification_preferences'); }

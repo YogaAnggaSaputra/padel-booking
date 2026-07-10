@@ -26,10 +26,9 @@ return new class extends Migration {
             $table->boolean('auto_confirm_booking')->default(false);
             $table->jsonb('metadata')->default('{}');
             $table->timestamps();
+            $table->index('city');
+            $table->index('is_active');
         });
-        Schema::create('clubs', function (Blueprint $table) { $table->index('slug'); });
-        Schema::create('clubs', function (Blueprint $table) { $table->index('city'); });
-        Schema::create('clubs', function (Blueprint $table) { $table->index('is_active'); });
     }
     public function down(): void { Schema::dropIfExists('clubs'); }
 };

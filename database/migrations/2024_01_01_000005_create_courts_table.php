@@ -6,27 +6,21 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('courts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('club_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('club_id')->constrained('clubs')->onDelete('cascade');
             $table->string('name');
             $table->string('slug');
-            $table->string('court_type')->default('outdoor');
-            $table->string('surface_type')->default('artificial_grass');
-            $table->boolean('is_available')->default(true);
-            $table->boolean('is_premium')->default(false);
-            $table->decimal('base_price', 10, 2);
-            $table->decimal('peak_price', 10, 2)->nullable();
-            $table->decimal('off_peak_price', 10, 2)->nullable();
-            $table->integer('booking_slot_duration')->default(60);
-            $table->integer('max_players')->default(4);
-            $table->text('description')->nullable();
-            $table->string('image_path')->nullable();
-            $table->integer('order_index')->default(0);
-            $table->jsonb('metadata')->default('{}');
+            $table->enum('type', ['indoor', 'outdoor', 'covered', 'panoramic']);
+            $table->enum('surface', ['glass', 'wall', 'artificial_grass', 'concrete']);
+            $table->boolean('has_lighting')->default(true);
+            $table->boolean('has_heating')->default(false);
+            $table->integer('capacity_players')->default(4);
+            $table->jsonb('amenities')->default('{}');
+            $table->boolean('is_active')->default(true);
+            $table->integer('display_order')->default(0);
             $table->timestamps();
             $table->unique(['club_id', 'slug']);
+            $table->index(['club_id', 'is_active']);
         });
-        Schema::create('courts', function (Blueprint $table) { $table->index('club_id'); });
-        Schema::create('courts', function (Blueprint $table) { $table->index('is_available'); });
     }
     public function down(): void { Schema::dropIfExists('courts'); }
 };

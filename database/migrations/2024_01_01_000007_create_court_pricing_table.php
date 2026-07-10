@@ -6,15 +6,20 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('court_pricing', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('court_id')->constrained()->cascadeOnDelete();
-            $table->unsignedTinyInteger('day_of_week')->nullable();
-            $table->time('start_time');
-            $table->time('end_time');
-            $table->decimal('price', 10, 2);
-            $table->jsonb('metadata')->default('{}');
+            $table->foreignId('court_id')->constrained('courts')->onDelete('cascade');
+            $table->enum('period_type', ['peak', 'off_peak', 'weekend', 'holiday', 'morning', 'evening']);
+            $table->string('name');
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->decimal('price_per_hour', 10, 2);
+            $table->decimal('weekend_price_per_hour', 10, 2)->nullable();
+            $table->jsonb('days_of_week')->nullable();
+            $table->date('effective_from')->nullable();
+            $table->date('effective_until')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
+            $table->index(['court_id', 'is_active']);
         });
-        Schema::create('court_pricing', function (Blueprint $table) { $table->index('court_id'); });
     }
     public function down(): void { Schema::dropIfExists('court_pricing'); }
 };

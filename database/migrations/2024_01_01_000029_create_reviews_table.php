@@ -18,8 +18,3 @@ return new class extends Migration {
             $table->timestamps();
             $table->unique(['club_id', 'user_id', 'booking_id']);
         });
-        Schema::create('reviews', function (Blueprint $table) { $table->index('club_id'); });
-        Schema::create('reviews', function (Blueprint $table) { $table->index('coach_id'); });
-    }
-    public function down(): void { Schema::dropIfExists('reviews'); }
-};
