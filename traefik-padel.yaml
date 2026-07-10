@@ -1,0 +1,32 @@
+http:
+  routers:
+    padel-booking-https:
+      rule: "Host(`padel.ngodingyuk.site`)"
+      service: padel-booking-svc
+      entryPoints: [https]
+      tls:
+        certResolver: letsencrypt
+      priority: 100
+
+    padel-booking-http-redirect:
+      rule: "Host(`padel.ngodingyuk.site`)"
+      entryPoints: [http]
+      service: noop
+      middlewares: [redirect-to-https]
+      priority: 100
+
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  services:
+    padel-booking-svc:
+      loadBalancer:
+        servers:
+          - url: "http://10.0.5.4:8080"
+        passHostHeader: true
+
+  # suppress unmatched HTTP (keep existing noop)
+  # existing default_redirect_503 already has a catchall noop with priority -1000
